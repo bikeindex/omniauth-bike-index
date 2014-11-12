@@ -19,8 +19,9 @@ _Right now (Nov 12 2014) the Bike Index OAuth API is still in beta, and is acces
 
 ## Usage
 
-OmniAuth::Strategies::BikeIndex is simply a Rack middleware. Read the OmniAuth
-1.0 docs for detailed instructions: https://github.com/intridea/omniauth.
+First add it to you Gemfile:
+
+`gem 'omniauth-bike-index'`
 
 Here's a quick example, adding the middleware to a Rails app in
 `config/initializers/omniauth.rb`:
@@ -38,6 +39,7 @@ Edit your routes.rb file to have:
 `devise_for :users, :controllers => { :omniauth_callbacks => "omniauth_callbacks" }`
 
 And create a file called `omniauth_callbacks_controller.rb` which should have this inside:
+
 ```ruby
 class OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
@@ -53,7 +55,7 @@ end
 
 The default scope is `public` - which will be submitted unless you configure additional scopes. You can set scopes in the configuration with a space seperated list, e.g. for Devise
 
-```ruby`
+```ruby
 Devise.setup do |config|
   config.omniauth :bike_index, ENV['BIKEINDEX_APP_ID'], ENV['BIKEINDEX_APP_SECRET'], scope: 'read_bikes write_user read_user`
 end
@@ -62,22 +64,18 @@ end
 Available scopes: `read_user`, `write_user`, `read_bikes`, `write_bikes`, `create_bikes`, `read_bikewise`, `write_bikewise`
 
 
-
-**You will not get an email unless you add the scope `read_user`**
-
-
 ## Credentials
 
-If you don't include a scope, you will get a uid from Bike Index for the user, and nothing else.
+If you don't include a scope, the response will include a `uid` from Bike Index for the user and nothing else.
 
-If you include the `read_bikes` scope, you will get an array of the ids for the bikes the user owns `bike_ids: [3414, 29367]`
+If you include the `read_bikes` scope, the response will include an array of the ids the user has registered on the Index `bike_ids: [3414, 29367]`
 
-You can use these IDs to access the API response for the bikes - e.g. [BikeIndex.org/api/v1/bikes/3414](https://bikeindex.org/api/v1/bikes/3414) & [/api/v1/bikes/29367](https://bikeindex.org/api/v1/bikes/29367)
+You can use these IDs to access information about the bikes - e.g. [BikeIndex.org/api/v1/bikes/3414](https://bikeindex.org/api/v1/bikes/3414) & [/api/v1/bikes/29367](https://bikeindex.org/api/v1/bikes/29367)
 
 _currently, you should use the v1 of the API ([documentation](https://bikeindex.org/documentation))_
 
 
-If you include the `read_user` scope, you will get the user's username, email and name. You will see their twitter handle and avatar if they have given permission for that to be shared. The keys for those items - 
+If you include the `read_user` scope, the response will include the user's username, email and name. You will also see their twitter handle and avatar if they have added them. The keys for these items - 
 `username`, `email`, `name`, `twitter` & `image` - all accessible in the `request.env['omniauth.auth']`, e.g. `request.env['omniauth.auth'].info.email`
 
 
