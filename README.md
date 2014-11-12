@@ -61,7 +61,7 @@ Devise.setup do |config|
 end
 ```
 
-Available scopes: `read_user`, `write_user`, `read_bikes`, `write_bikes`, `create_bikes`, `read_bikewise`, `write_bikewise`
+Available scopes: `read_user`, `write_user`, `read_bikes`, `write_bikes`, `read_bikewise`, `write_bikewise`
 
 
 ## Credentials
