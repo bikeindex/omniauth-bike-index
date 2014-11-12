@@ -1,0 +1,87 @@
+OmniAuth::BikeIndex
+==============
+
+Bike Index OAuth2 Strategy for OmniAuth 1.0.
+
+Supports the OAuth 2.0 server-side and client-side flows.
+
+
+## Creating an application
+
+To be able to use OAuth on the Bike Index, you have to create an application. Go to [BikeIndex.org/oauth/applications](https://bikeindex.org/oauth/applications) to add your application.
+
+Once you've added your application and your routes, you'll be able to see your Application ID and Secret, which you will need for omniauth.
+
+**Note**: Callback url has to be an exact match - if your url is `http://localhost:3001/users/auth/bike_index/callback` you _must_ enter that exactly - `http://localhost:3001/users/auth/` will not work.
+
+
+_Right now (Nov 12 2014) the Bike Index OAuth API is still in beta, and is accessible at /api/v2 - it can provide a list of bike ids for a given user, more functionality will be added soon._
+
+## Usage
+
+OmniAuth::Strategies::BikeIndex is simply a Rack middleware. Read the OmniAuth
+1.0 docs for detailed instructions: https://github.com/intridea/omniauth.
+
+Here's a quick example, adding the middleware to a Rails app in
+`config/initializers/omniauth.rb`:
+
+```ruby
+Rails.application.config.middleware.use OmniAuth::Builder do
+  provider :bike_index, ENV['BIKEINDEX_APP_ID'], ENV['BIKEINDEX_APP_SECRET']
+end
+```
+
+Your `BIKEINDEX_APP_ID` and your `BIKEINDEX_APP_SECRET` are both application specific. To create or view your applications go to [BikeIndex.org/oauth/applications](https://bikeindex.org/oauth/applications).
+
+Edit your routes.rb file to have:
+
+`devise_for :users, :controllers => { :omniauth_callbacks => "omniauth_callbacks" }`
+
+And create a file called `omniauth_callbacks_controller.rb` which should have this inside:
+```ruby
+class OmniauthCallbacksController < Devise::OmniauthCallbacksController
+
+  def bike_index
+    # Delete the code inside of this method and write your own.
+    # The code below is to show you where to access the data.
+    raise request.env["omniauth.auth"].to_json
+  end
+end
+```
+
+## Scopes
+
+The default scope is `public` - which will be submitted unless you configure additional scopes. You can set scopes in the configuration with a space seperated list, e.g. for Devise
+
+```ruby`
+Devise.setup do |config|
+  config.omniauth :bike_index, ENV['BIKEINDEX_APP_ID'], ENV['BIKEINDEX_APP_SECRET'], scope: 'read_bikes write_user read_user`
+end
+```
+
+Available scopes: `read_user`, `write_user`, `read_bikes`, `write_bikes`, `create_bikes`, `read_bikewise`, `write_bikewise`
+
+
+
+**You will not get an email unless you add the scope `read_user`**
+
+
+## Credentials
+
+If you don't include a scope, you will get a uid from Bike Index for the user, and nothing else.
+
+If you include the `read_bikes` scope, you will get an array of the ids for the bikes the user owns `bike_ids: [3414, 29367]`
+
+You can use these IDs to access the API response for the bikes - e.g. [BikeIndex.org/api/v1/bikes/3414](https://bikeindex.org/api/v1/bikes/3414) & [/api/v1/bikes/29367](https://bikeindex.org/api/v1/bikes/29367)
+
+_currently, you should use the v1 of the API ([documentation](https://bikeindex.org/documentation))_
+
+
+If you include the `read_user` scope, you will get the user's username, email and name. You will see their twitter handle and avatar if they have given permission for that to be shared. The keys for those items - 
+`username`, `email`, `name`, `twitter` & `image` - all accessible in the `request.env['omniauth.auth']`, e.g. `request.env['omniauth.auth'].info.email`
+
+
+## Auth Hash
+
+You can also see the authetication hash (in JSON format) by going to the authentication url on the Bike Index with the user's access token - `https://bikeindex.org/api/v2/users/current?access_token=<OAUTH_ACCESS_TOKEN>`
+
