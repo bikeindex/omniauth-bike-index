@@ -15,7 +15,7 @@ Once you've added your application and your routes, you'll be able to see your A
 **Note**: Callback url has to be an exact match - if your url is `http://localhost:3001/users/auth/bike_index/callback` you _must_ enter that exactly - `http://localhost:3001/users/auth/` will not work.
 
 
-_Right now (Nov 12 2014) the Bike Index OAuth API is still in beta, and is accessible at /api/v2 - it can provide a list of bike ids for a given user, more functionality will be added soon._
+Check out **[API V2 Documentation](https://bikeindex.org/documentation/api_v2)** to see what can be done with authenticated users.
 
 ## Usage
 
