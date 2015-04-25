@@ -18,3 +18,5 @@ tmp
 .env
 .rspec
 .ruby-*
+
+info.markdown
