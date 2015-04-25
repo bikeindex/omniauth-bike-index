@@ -12,7 +12,7 @@ module OmniAuth
 
       info do
         prune!(
-          'username'    => raw_info['user']['username'],
+          'nickname'    => raw_info['user']['username'],
           'bike_ids'    => raw_info['bike_ids'],
           'email'       => raw_info['user']['email'],
           'name'        => raw_info['user']['name'],
@@ -33,8 +33,6 @@ module OmniAuth
 
       def request_phase
         options[:authorize_params] = {
-          # :client_id      => options['client_id'],
-          # :response_type  => 'code',
           :scope          => (options['scope'] || DEFAULT_SCOPE)
         }
 

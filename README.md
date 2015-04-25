@@ -61,7 +61,7 @@ Devise.setup do |config|
 end
 ```
 
-Available scopes: `read_user`, `write_user`, `read_bikes`, `write_bikes`, `read_bikewise`, `write_bikewise`
+Available scopes: `read_user`, `write_user`, `read_bikes`, `write_bikes`
 
 
 ## Credentials
@@ -72,11 +72,8 @@ If you include the `read_bikes` scope, the response will include an array of the
 
 You can use these IDs to access information about the bikes - e.g. [BikeIndex.org/api/v1/bikes/3414](https://bikeindex.org/api/v1/bikes/3414) & [/api/v1/bikes/29367](https://bikeindex.org/api/v1/bikes/29367)
 
-_currently, you should use the v1 of the API ([documentation](https://bikeindex.org/documentation))_
-
-
-If you include the `read_user` scope, the response will include the user's username, email and name. You will also see their twitter handle and avatar if they have added them. The keys for these items - 
-`username`, `email`, `name`, `twitter` & `image` - all accessible in the `request.env['omniauth.auth']`, e.g. `request.env['omniauth.auth'].info.email`
+If you include the `read_user` scope, the response will include the user's nickname, email and name. You will also see their twitter handle and avatar if they have added them. The keys for these items - 
+`nickname`, `email`, `name`, `twitter` & `image` - all accessible in the `request.env['omniauth.auth']`, e.g. `request.env['omniauth.auth'].info.email`
 
 
 ## Auth Hash
