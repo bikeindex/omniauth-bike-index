@@ -20,7 +20,7 @@ end
 
 get '/' do
   <<-HTML
-  <a href='/auth/venmo'>Sign in with Bike Index</a>
+  <a href='/auth/bikeindex'>Sign in with Bike Index</a>
   HTML
 end
 

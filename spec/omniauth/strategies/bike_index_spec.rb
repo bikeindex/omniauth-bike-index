@@ -30,5 +30,4 @@ describe OmniAuth::Strategies::BikeIndex do
       OmniAuth::Strategies::Developer.new(app, :uid_field => :name).options.uid_field # => :name
     end
   end
-
 end

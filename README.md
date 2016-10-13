@@ -1,4 +1,4 @@
-OmniAuth::BikeIndex
+# OmniAuth::BikeIndex [![Build Status](https://travis-ci.org/bikeindex/omniauth-bike-index.svg?branch=master)](https://travis-ci.org/bikeindex/omniauth-bike-index)
 ==============
 
 Bike Index OAuth2 Strategy for OmniAuth 1.0.
@@ -15,7 +15,7 @@ Once you've added your application and your routes, you'll be able to see your A
 **Note**: Callback url has to be an exact match - if your url is `http://localhost:3001/users/auth/bike_index/callback` you _must_ enter that exactly - `http://localhost:3001/users/auth/` will not work.
 
 
-Check out **[API V2 Documentation](https://bikeindex.org/documentation/api_v2)** to see what can be done with authenticated users.
+Check out the **[Bike Index API Documentation](https://bikeindex.org/documentation)** to see what can be done with authenticated users.
 
 ## Usage
 
@@ -36,17 +36,16 @@ Your `BIKEINDEX_APP_ID` and your `BIKEINDEX_APP_SECRET` are both application spe
 
 Edit your routes.rb file to have:
 
-`devise_for :users, :controllers => { :omniauth_callbacks => "omniauth_callbacks" }`
+`devise_for :users, controllers: { omniauth_callbacks: 'omniauth_callbacks' }`
 
 And create a file called `omniauth_callbacks_controller.rb` which should have this inside:
 
 ```ruby
 class OmniauthCallbacksController < Devise::OmniauthCallbacksController
-
   def bike_index
     # Delete the code inside of this method and write your own.
     # The code below is to show you where to access the data.
-    raise request.env["omniauth.auth"].to_json
+    raise request.env['omniauth.auth'].to_json
   end
 end
 ```
@@ -70,7 +69,7 @@ If you don't include a scope, the response will include a `uid` from Bike Index 
 
 If you include the `read_bikes` scope, the response will include an array of the ids the user has registered on the Index `bike_ids: [3414, 29367]`
 
-You can use these IDs to access information about the bikes - e.g. [BikeIndex.org/api/v1/bikes/3414](https://bikeindex.org/api/v1/bikes/3414) & [/api/v1/bikes/29367](https://bikeindex.org/api/v1/bikes/29367)
+You can use these IDs to access information about the bikes - e.g. [api/v3/bikes/3414](https://bikeindex.org/api/v3/bikes/3414) & [api/v3/bikes/29367](https://bikeindex.org/api/v3/bikes/29367)
 
 If you include the `read_user` scope, the response will include the user's nickname, email and name. You will also see their twitter handle and avatar if they have added them. The keys for these items - 
 `nickname`, `email`, `name`, `twitter` & `image` - all accessible in the `request.env['omniauth.auth']`, e.g. `request.env['omniauth.auth'].info.email`
@@ -78,5 +77,5 @@ If you include the `read_user` scope, the response will include the user's nickn
 
 ## Auth Hash
 
-You can also see the authetication hash (in JSON format) by going to the authentication url on the Bike Index with the user's access token - `https://bikeindex.org/api/v2/users/current?access_token=<OAUTH_ACCESS_TOKEN>`
+You can also see the authetication hash (in JSON format) by going to the authentication url on the Bike Index with the user's access token - `https://bikeindex.org/api/v3/me?access_token=<OAUTH_ACCESS_TOKEN>`
 
