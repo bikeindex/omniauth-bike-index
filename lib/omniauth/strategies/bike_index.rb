@@ -35,7 +35,12 @@ module OmniAuth
         super
       end
 
-    private
+      # https://github.com/omniauth/omniauth-oauth2/issues/81
+      def callback_url
+         full_host + script_name + callback_path
+      end
+
+      private
 
       def prune!(hash)
         hash.delete_if do |_, value|
@@ -43,7 +48,6 @@ module OmniAuth
           value.nil? || (value.respond_to?(:empty?) && value.empty?)
         end
       end
-
     end
   end
 end
