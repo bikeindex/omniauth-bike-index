@@ -11,12 +11,13 @@ module OmniAuth
 
       info do
         prune!(
-          "nickname"    => raw_info["user"]["username"],
-          "bike_ids"    => raw_info["bike_ids"],
-          "email"       => raw_info["user"]["email"],
-          "name"        => raw_info["user"]["name"],
-          "twitter"     => raw_info["user"]["twitter"],
-          "image"       => raw_info["user"]["image"],
+          "nickname" => raw_info["user"]["username"],
+          "bike_ids" => raw_info["bike_ids"],
+          "email" => raw_info["user"]["email"],
+          "secondary_emails" => raw_info["user"]["secondary_emails"],
+          "name" => raw_info["user"]["name"],
+          "twitter" => raw_info["user"]["twitter"],
+          "image" => raw_info["user"]["image"],
         )
       end
 
