@@ -1,9 +1,10 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-gem 'rake'
+gem "rake"
 
 group :test do
-  gem 'rspec'
+  gem "standard"
+  gem "rspec"
 end
 
 gemspec
