@@ -17,7 +17,7 @@ module OmniAuth
           "secondary_emails" => raw_info["user"]["secondary_emails"],
           "name" => raw_info["user"]["name"],
           "twitter" => raw_info["user"]["twitter"],
-          "image" => raw_info["user"]["image"],
+          "image" => raw_info["user"]["image"]
         )
       end
 
@@ -32,7 +32,11 @@ module OmniAuth
       end
 
       def request_phase
-        options[:authorize_params] = { scope: (options["scope"] || DEFAULT_SCOPE), partner: options["partner"] }
+        options[:authorize_params] = {
+          scope: (options["scope"] || DEFAULT_SCOPE),
+          partner: options["partner"],
+          unauthenticated_redirect: options["unauthenticated_redirect"]
+        }
         super
       end
 
