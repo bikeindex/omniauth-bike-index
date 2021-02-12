@@ -31,11 +31,20 @@ module OmniAuth
         @raw_info ||= access_token.get("/api/v3/me").parsed || {}
       end
 
+      def param_or_option(key)
+        # omniauth.params are the parameters passed in to the URL
+        # (e.g. company in /users/auth/bike_index?company=Metro)
+        # So for partner, company and unauthenticated_redirect it tries those params, then goes from settings
+         session["omniauth.params"] && session["omniauth.params"][key] ||
+          option[key]
+      end
+
       def request_phase
         options[:authorize_params] = {
           scope: (options["scope"] || DEFAULT_SCOPE),
-          partner: options["partner"],
-          unauthenticated_redirect: options["unauthenticated_redirect"]
+          partner: param_or_option("partner"),
+          company: param_or_option("company"),
+          unauthenticated_redirect: param_or_option("unauthenticated_redirect")
         }
         super
       end
