@@ -36,7 +36,7 @@ module OmniAuth
         # (e.g. company in /users/auth/bike_index?company=Metro)
         # So for partner, company and unauthenticated_redirect it tries those params, then goes from settings
          session["omniauth.params"] && session["omniauth.params"][key] ||
-          option[key]
+          options[key]
       end
 
       def request_phase
