@@ -9,10 +9,10 @@ require "omniauth-bike-index"
 Dotenv.load
 
 use Rack::Session::Cookie, key: "key",
-                           domain: "localhost",
-                           path: "/",
-                           expire_after: 14_400,
-                           secret: "secret"
+  domain: "localhost",
+  path: "/",
+  expire_after: 14_400,
+  secret: "secret"
 
 use OmniAuth::Builder do
   provider :bike_index, ENV["CLIENT_ID"], ENV["CLIENT_SECRET"], scope: "access_profile"

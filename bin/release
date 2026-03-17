@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+VERSION=$1
+
+if [ -z "$VERSION" ]; then
+  echo "bin/release needs a version!"
+  echo ""
+  echo "Example: bin/release 1.0.7"
+  exit 1
+fi
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [ "$BRANCH" != "main" ]; then
+  echo "Error: must be on main branch to release (currently on $BRANCH)"
+  exit 1
+fi
+
+git fetch origin main
+if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+  echo "Error: local main is not up to date with origin/main"
+  exit 1
+fi
+
+printf "module OmniAuth\n  module BikeIndex\n    VERSION = \"$VERSION\"\n  end\nend\n" > ./lib/omniauth/bike_index/version.rb
+bundle
+git add Gemfile.lock lib/omniauth/bike_index/version.rb
+git commit -m "Bump version for $VERSION"
+git push
+git tag v$VERSION
+git push --tags
+gem build omniauth-bike-index.gemspec
+gem push "omniauth-bike-index-$VERSION.gem" --host https://rubygems.org
+rm "omniauth-bike-index-$VERSION.gem"
+gh release create "v$VERSION" --title "v$VERSION" --generate-notes
