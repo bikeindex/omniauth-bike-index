@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# To test linting, rather than automatically fix it, set LINT_TEST
+# To test linting, rather than automatically fix it, set LINT_TEST or pass --no-fix
 #
 cli_args = ARGV
 lint_test = ENV["LINT_TEST"] == "true" || cli_args.include?("--no-fix")
@@ -24,9 +24,7 @@ FileUtils.chdir APP_ROOT do
 
     system!("bundle exec standardrb --no-fix")
     system!("bundle exec rubocop -c .rubocop_custom.yml")
-  end
-
-  if file_args.any?
+  elsif file_args.any?
     file_args.each do |file|
       system!("bundle exec standardrb --fix #{file}")
       system!("bundle exec rubocop -c .rubocop_custom.yml -A #{file}")
