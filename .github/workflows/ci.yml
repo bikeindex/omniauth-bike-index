@@ -1,9 +1,7 @@
 name: CI
 
 on:
-  pull_request:
   push:
-    branches: [main]
 
 jobs:
   lint:
@@ -14,7 +12,7 @@ jobs:
         with:
           ruby-version: "3.4"
           bundler-cache: true
-      - run: bundle exec standardrb
+      - run: bin/lint --no-fix
 
   test:
     runs-on: ubuntu-latest
