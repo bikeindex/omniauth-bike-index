@@ -1,4 +1,4 @@
-# OmniAuth::BikeIndex [![Build Status](https://travis-ci.org/bikeindex/omniauth-bike-index.svg?branch=master)](https://travis-ci.org/bikeindex/omniauth-bike-index)
+# OmniAuth::BikeIndex
 
 Bike Index OAuth2 Strategy for OmniAuth 1.0.
 
@@ -49,11 +49,11 @@ end
 
 ## Scopes
 
-The default scope is `public` - which will be submitted unless you configure additional scopes. You can set scopes in the configuration with a space seperated list, e.g. for Devise
+The default scope is `public` - which will be submitted unless you configure additional scopes. You can set scopes in the configuration with a space separated list, e.g. for Devise
 
 ```ruby
 Devise.setup do |config|
-  config.omniauth :bike_index, ENV['BIKEINDEX_APP_ID'], ENV['BIKEINDEX_APP_SECRET'], scope: 'read_bikes write_user read_user`
+  config.omniauth :bike_index, ENV['BIKEINDEX_APP_ID'], ENV['BIKEINDEX_APP_SECRET'], scope: 'read_bikes write_user read_user'
 end
 ```
 
@@ -72,4 +72,4 @@ If you include the `read_user` scope, the response will include the user's nickn
 
 ## Auth Hash
 
-You can also see the authetication hash (in JSON format) by going to the authentication url on the Bike Index with the user's access token - `https://bikeindex.org/api/v3/me?access_token=<OAUTH_ACCESS_TOKEN>`
+You can also see the authentication hash (in JSON format) by going to the authentication url on the Bike Index with the user's access token - `https://bikeindex.org/api/v3/me?access_token=<OAUTH_ACCESS_TOKEN>`
