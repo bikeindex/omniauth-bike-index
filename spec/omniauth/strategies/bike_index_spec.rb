@@ -1,18 +1,27 @@
 require "spec_helper"
+require "oauth2"
 
 describe OmniAuth::Strategies::BikeIndex do
   let(:app) { lambda { |env| [200, {}, ["Hello World."]] } }
   let(:options) { {} }
+  let(:session) { {} }
+  let(:rack_request) { Rack::Request.new(Rack::MockRequest.env_for("https://example.com/callback")) }
 
   subject do
     OmniAuth::Strategies::BikeIndex.new(app, "client_id", "client_secret", options).tap do |strategy|
-      allow(strategy).to receive(:request).and_return(request)
+      allow(strategy).to receive(:request).and_return(rack_request)
       allow(strategy).to receive(:session).and_return(session)
     end
   end
 
-  let(:request) { double("Request", params: {}, scheme: "https", url: "https://example.com/callback") }
-  let(:session) { {} }
+  let(:parsed_response) do
+    {
+      "id" => 42,
+      "user" => {"username" => "bike_rider", "email" => "rider@example.com", "name" => "Bike Rider",
+                 "secondary_emails" => ["alt@example.com"], "twitter" => "bikerider", "image" => "https://example.com/photo.jpg"},
+      "bike_ids" => [1, 2, 3]
+    }
+  end
 
   context "client options" do
     it "has correct name" do
@@ -29,34 +38,34 @@ describe OmniAuth::Strategies::BikeIndex do
   end
 
   context "raw_info" do
-    let(:parsed_response) do
-      {
-        "id" => 42,
-        "user" => {"username" => "bike_rider", "email" => "rider@example.com", "name" => "Bike Rider",
-                   "secondary_emails" => ["alt@example.com"], "twitter" => "bikerider", "image" => "https://example.com/photo.jpg"},
-        "bike_ids" => [1, 2, 3]
-      }
-    end
-    let(:access_token) { double("AccessToken") }
-    let(:response) { double("Response", parsed: parsed_response) }
+    let(:access_token) { OAuth2::AccessToken.new(subject.client, "test_token") }
 
     before do
       allow(subject).to receive(:access_token).and_return(access_token)
-      allow(access_token).to receive(:get).with("/api/v3/me").and_return(response)
     end
 
-    it "fetches from /api/v3/me" do
-      expect(subject.raw_info).to eq(parsed_response)
-    end
+    context "with successful response" do
+      before do
+        stub_request(:get, "https://bikeindex.org/api/v3/me")
+          .to_return(body: parsed_response.to_json, headers: {"Content-Type" => "application/json"})
+      end
 
-    it "memoizes the result" do
-      subject.raw_info
-      subject.raw_info
-      expect(access_token).to have_received(:get).once
+      it "fetches from /api/v3/me" do
+        expect(subject.raw_info).to eq(parsed_response)
+      end
+
+      it "memoizes the result" do
+        subject.raw_info
+        subject.raw_info
+        expect(WebMock).to have_requested(:get, "https://bikeindex.org/api/v3/me").once
+      end
     end
 
     context "when parsed response is nil" do
-      let(:response) { double("Response", parsed: nil) }
+      before do
+        stub_request(:get, "https://bikeindex.org/api/v3/me")
+          .to_return(body: "null", headers: {"Content-Type" => "application/json"})
+      end
 
       it "returns empty hash" do
         expect(subject.raw_info).to eq({})
@@ -65,13 +74,7 @@ describe OmniAuth::Strategies::BikeIndex do
   end
 
   context "uid" do
-    let(:access_token) { double("AccessToken") }
-    let(:response) { double("Response", parsed: {"id" => 42, "user" => {}, "bike_ids" => []}) }
-
-    before do
-      allow(subject).to receive(:access_token).and_return(access_token)
-      allow(access_token).to receive(:get).with("/api/v3/me").and_return(response)
-    end
+    before { allow(subject).to receive(:raw_info).and_return(parsed_response) }
 
     it "returns the user id" do
       expect(subject.uid).to eq(42)
@@ -79,21 +82,7 @@ describe OmniAuth::Strategies::BikeIndex do
   end
 
   context "info" do
-    let(:access_token) { double("AccessToken") }
-    let(:parsed_response) do
-      {
-        "id" => 42,
-        "user" => {"username" => "bike_rider", "email" => "rider@example.com", "name" => "Bike Rider",
-                   "secondary_emails" => ["alt@example.com"], "twitter" => "bikerider", "image" => "https://example.com/photo.jpg"},
-        "bike_ids" => [1, 2, 3]
-      }
-    end
-    let(:response) { double("Response", parsed: parsed_response) }
-
-    before do
-      allow(subject).to receive(:access_token).and_return(access_token)
-      allow(access_token).to receive(:get).with("/api/v3/me").and_return(response)
-    end
+    before { allow(subject).to receive(:raw_info).and_return(parsed_response) }
 
     it "returns mapped user info" do
       expect(subject.info).to eq(
@@ -128,14 +117,7 @@ describe OmniAuth::Strategies::BikeIndex do
   end
 
   context "extra" do
-    let(:access_token) { double("AccessToken") }
-    let(:parsed_response) { {"id" => 42, "user" => {"username" => "bike_rider"}, "bike_ids" => []} }
-    let(:response) { double("Response", parsed: parsed_response) }
-
-    before do
-      allow(subject).to receive(:access_token).and_return(access_token)
-      allow(access_token).to receive(:get).with("/api/v3/me").and_return(response)
-    end
+    before { allow(subject).to receive(:raw_info).and_return(parsed_response) }
 
     it "includes raw_info" do
       expect(subject.extra["raw_info"]).to eq(parsed_response)
@@ -244,12 +226,6 @@ describe OmniAuth::Strategies::BikeIndex do
   end
 
   context "prune!" do
-    let(:access_token) { double("AccessToken") }
-
-    before do
-      allow(subject).to receive(:access_token).and_return(access_token)
-    end
-
     it "removes nil values" do
       result = subject.send(:prune!, {"a" => 1, "b" => nil})
       expect(result).to eq({"a" => 1})
