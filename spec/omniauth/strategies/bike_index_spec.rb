@@ -110,7 +110,8 @@ describe OmniAuth::Strategies::BikeIndex do
         expect(subject.info).to eq(
           "nickname" => "bike_rider",
           "bike_ids" => [1],
-          "email" => "rider@example.com"
+          "email" => "rider@example.com",
+          "secondary_emails" => []
         )
       end
     end
@@ -236,9 +237,9 @@ describe OmniAuth::Strategies::BikeIndex do
       expect(result).to eq({"a" => 1})
     end
 
-    it "removes empty arrays" do
+    it "preserves empty arrays" do
       result = subject.send(:prune!, {"a" => 1, "b" => []})
-      expect(result).to eq({"a" => 1})
+      expect(result).to eq({"a" => 1, "b" => []})
     end
 
     it "removes empty nested hashes" do
