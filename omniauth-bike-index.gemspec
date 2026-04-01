@@ -20,8 +20,8 @@ Gem::Specification.new do |spec|
   spec.files = `git ls-files`.split("\n")
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency "omniauth", "~> 1.2"
-  spec.add_runtime_dependency "omniauth-oauth2", "~> 1.1"
+  spec.add_runtime_dependency "omniauth", "~> 2.0"
+  spec.add_runtime_dependency "omniauth-oauth2", "~> 1.8"
 
   spec.add_development_dependency "dotenv", "~> 0"
   spec.add_development_dependency "sinatra", "~> 0"
