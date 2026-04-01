@@ -35,8 +35,7 @@ module OmniAuth
         # omniauth.params are the parameters passed in to the URL
         # (e.g. company in /users/auth/bike_index?company=Metro)
         # So for partner, company and unauthenticated_redirect it tries those params, then goes from settings
-        session["omniauth.params"] && session["omniauth.params"][key] ||
-          options[key]
+        session.dig("omniauth.params", key) || options[key]
       end
 
       def request_phase
@@ -59,7 +58,7 @@ module OmniAuth
       def prune!(hash)
         hash.delete_if do |_, value|
           prune!(value) if value.is_a?(Hash)
-          value.nil? || (value.respond_to?(:empty?) && value.empty?)
+          value.nil? || (value.is_a?(Hash) && value.empty?) || (value.is_a?(String) && value.empty?)
         end
       end
     end
